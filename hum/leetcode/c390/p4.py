@@ -40,7 +40,3 @@ class Solution:
       res.append(root.search(w[::-1]))
 
     return res
-
-
-s = Solution()
-print(s.stringIndices(wordsContainer=["bcd", "xbcd"], wordsQuery=["xyz"]))
