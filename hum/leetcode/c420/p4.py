@@ -37,21 +37,22 @@ class Solution:
       graph[parent[i]].append(i)
     r = []
     size = [0] * n
+    tmp_s = []
 
     def dfs(u):
       graph[u].sort()
-      res = []
       for v in graph[u]:
-        res.append(dfs(v))
+        dfs(v)
         size[u] += size[v]
 
-      res.append(s[u])
+      tmp_s.append(s[u])
       r.append(u)
 
       size[u] += 1
-      return ''.join(res)
 
-    dfs_s = dfs(0)
+    dfs(0)
+    dfs_s = ''.join(tmp_s)
+
     MOD = random.getrandbits(64)
     shs = StringHash(dfs_s, MOD)
     shs_r = StringHash(dfs_s[::-1], MOD)
@@ -65,7 +66,3 @@ class Solution:
         res[r[i]] = True
 
     return res
-
-
-s = Solution()
-print(s.findAnswer(parent=[-1, 0, 0, 1, 1, 2], s="aababa"))
