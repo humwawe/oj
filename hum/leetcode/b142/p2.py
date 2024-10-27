@@ -13,22 +13,17 @@ class Solution:
     tmp = [[-1] * 26 for _ in range(n)]
 
     def dfs(u):
-      tmp[u][ord(s[u]) - ord('a')] = u
+      cur = ord(s[u]) - ord('a')
+      tmp[u][cur] = u
       for v in graph[u]:
         tmp[v][:] = tmp[u][:]
         dfs(v)
-
-    dfs(0)
-
-    def dfs2(u):
-      for v in graph[u]:
-        dfs2(v)
         x = tmp[u][ord(s[v]) - ord('a')]
         if x != -1:
           ng[u].remove(v)
           ng[x].add(v)
 
-    dfs2(0)
+    dfs(0)
 
     res = [1] * n
 
