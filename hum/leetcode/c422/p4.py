@@ -1,5 +1,14 @@
 from collections import Counter
-from math import comb
+
+mod = 10 ** 9 + 7
+M = 80
+fac = [0] * (M + 1)
+fac[1] = 1
+inv_fac = [0] * (M + 1)
+inv_fac[1] = 1
+for i in range(2, M + 1):
+  fac[i] = i * fac[i - 1] % mod
+  inv_fac[i] = inv_fac[i - 1] * pow(i, mod - 2, mod) % mod
 
 
 class Solution:
@@ -9,38 +18,28 @@ class Solution:
     s = sum(num)
     if s % 2 != 0:
       return 0
+    n = len(num)
     m = s // 2
-    c = len(num) // 2
-    o_c = len(num) - c
-    cnt = Counter(num)
+    c = n // 2
     dp = [[0] * (m + 1) for _ in range(c + 1)]
-    vis = [[0] * (m + 1) for _ in range(c + 1)]
     dp[0][0] = 1
-    vis[0][0] = 1
-    acc = [0]
-    for x in range(10):
-      acc.append(acc[-1] + cnt[x])
-    mod = 10 ** 9 + 7
-    for x in range(10):
-      if cnt[x]:
-        for cur_c in range(cnt[x] + 1):
-          for pre_c in range(c + 1):
-            for pre_v in range(m + 1):
-              if vis[pre_c][pre_v]:
-                nc = cur_c + pre_c
-                if nc > c:
-                  continue
-                nv = pre_v + x * cur_c
-                if nv > m:
-                  continue
-                if o_c - (acc[x] - pre_c) < 0:
-                  continue
-                vis[nc][nv] = 1
-                dp[nc][nv] = (dp[nc][nv] + dp[pre_c][pre_v] * comb(cur_c, c - pre_c)
-                              * comb(cnt[x] - cur_c, o_c - (acc[x] - pre_c))) % mod
+    for i in range(n):
+      ndp = [[0] * (m + 1) for _ in range(c + 1)]
+      for pre_c in range(c + 1):
+        for pre_v in range(m + 1):
+          ndp[pre_c][pre_v] = (ndp[pre_c][pre_v] + dp[pre_c][pre_v]) % mod
+          nc = pre_c + 1
+          if nc > c:
+            continue
+          nv = pre_v + num[i]
+          if nv > m:
+            continue
+          ndp[nc][nv] = (ndp[nc][nv] + dp[pre_c][pre_v]) % mod
+      dp = ndp
 
-    return dp[c][m]
+    res = dp[c][m] * fac[c] * fac[n - c] % mod
 
-
-s = Solution()
-print(s.countBalancedPermutations("123"))
+    cnt = Counter(num)
+    for x in cnt.values():
+      res = res * inv_fac[x] % mod
+    return res
